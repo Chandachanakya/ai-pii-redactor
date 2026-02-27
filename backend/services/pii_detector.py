@@ -20,6 +20,8 @@ PATTERNS = {
     "CREDIT_CARD": r"\b(?:\d{4}[-\s]?){3}\d{4}\b",
     "AADHAAR": r"\b\d{4}\s?\d{4}\s?\d{4}\b",
     "PAN": r"\b[A-Z]{5}\d{4}[A-Z]\b",
+    "IP": r"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b",
+    "DATE": r"\b\d{1,2}[-/]\d{1,2}[-/]\d{2,4}\b|\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* \d{1,2},? \d{4}\b",
 }
 
 # ---------------------------------------------------------------------------
@@ -45,12 +47,23 @@ def _get_nlp():
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
-def detect_pii(text: str) -> List[Dict]:
-    """Return a list of PII entities found in *text*."""
+def detect_pii(text: str, enabled_types: List[str] = None) -> List[Dict]:
+    """Return a list of PII entities found in *text*, optionally filtered by type."""
     entities: List[Dict] = []
+
+    # Map mapping backend types to pattern keys
+    # PATTERNS keys: EMAIL, PHONE, SSN, CREDIT_CARD, AADHAAR, PAN
+    # NER labels: PERSON -> NAME, ORG -> ORG, GPE -> LOCATION
+    
+    # If no types provided, assume all are enabled
+    if enabled_types is None:
+        enabled_types = list(PATTERNS.keys()) + ["NAME", "ORG", "LOCATION"]
 
     # Regex-based detection
     for pii_type, pattern in PATTERNS.items():
+        if pii_type not in enabled_types:
+            continue
+            
         for match in re.finditer(pattern, text):
             # Filter: phone must have at least 10 digits total
             if pii_type == "PHONE":
@@ -66,19 +79,23 @@ def detect_pii(text: str) -> List[Dict]:
                 }
             )
 
-    # NER-based detection (PERSON, ORG)
+    # NER-based detection (PERSON, ORG, LOCATION)
     nlp = _get_nlp()
     doc = nlp(text)
     # Map spaCy labels to contract entity types
     LABEL_MAP = {"PERSON": "NAME", "ORG": "ORG", "GPE": "LOCATION"}
     for ent in doc.ents:
         if ent.label_ in LABEL_MAP:
+            pii_type = LABEL_MAP[ent.label_]
+            if pii_type not in enabled_types:
+                continue
+                
             # Filter: skip very short NER entities (usually noise)
             if len(ent.text.strip()) <= 2:
                 continue
             entities.append(
                 {
-                    "type": LABEL_MAP[ent.label_],
+                    "type": pii_type,
                     "value": ent.text,
                     "start": ent.start_char,
                     "end": ent.end_char,

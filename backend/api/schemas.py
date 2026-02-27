@@ -21,6 +21,8 @@ class PIISummary(BaseModel):
     aadhaar: int = 0
     pan: int = 0
     locations: int = 0
+    ips: int = 0
+    dates: int = 0
 
 
 class AnalyzeResponse(BaseModel):

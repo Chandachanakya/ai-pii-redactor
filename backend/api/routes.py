@@ -22,12 +22,19 @@ MAX_FILE_SIZE = 10 * 1024 * 1024
 async def analyze(
     text: Optional[str] = Form(None),
     file: Optional[UploadFile] = File(None),
+    enabled_types: Optional[str] = Form(None),
 ):
     """
     Accept raw text OR a file (PDF / image / txt).
+    Accepts optional 'enabled_types' (comma-separated string).
     Returns the locked contract: file_name, pii_summary, risk_score,
     risk_level, detected_entities, redacted_text.
     """
+
+    # Parse enabled_types if provided
+    parsed_types = None
+    if enabled_types:
+        parsed_types = [t.strip().upper() for t in enabled_types.split(",") if t.strip()]
 
     # --- 1. Get raw text & file name ----------------------------------------
     file_name = "raw_text"
@@ -97,7 +104,7 @@ async def analyze(
 
     # --- 2. Detect PII (with NLP error handling) ----------------------------
     try:
-        pii_entities = detect_pii(raw_text)
+        pii_entities = detect_pii(raw_text, enabled_types=parsed_types)
     except Exception as e:
         logger.error(f"PII detection failed: {e}")
         raise HTTPException(
@@ -128,6 +135,8 @@ async def analyze(
         aadhaar=type_counts.get("AADHAAR", 0),
         pan=type_counts.get("PAN", 0),
         locations=type_counts.get("LOCATION", 0),
+        ips=type_counts.get("IP", 0),
+        dates=type_counts.get("DATE", 0),
     )
 
     # --- 6. Locked response -------------------------------------------------

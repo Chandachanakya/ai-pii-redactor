@@ -79,9 +79,24 @@ export default function UploadPage() {
     setProgress(10);
 
     try {
-      // Build FormData with the file
+      // Build FormData with the file and filters
       const formData = new FormData();
       formData.append("file", file);
+
+      // Map UI toggle IDs to backend entity types
+      const MAPPING: Record<string, string> = {
+        email: "EMAIL", phone: "PHONE", aadhaar: "AADHAAR", pan: "PAN",
+        credit_card: "CREDIT_CARD", ssn: "SSN", ip: "IP",
+        person: "NAME", org: "ORG", date: "DATE",
+      };
+
+      const enabledBackendTypes = Array.from(enabledTypes)
+        .map(id => MAPPING[id])
+        .filter(Boolean);
+
+      if (enabledBackendTypes.length > 0) {
+        formData.append("enabled_types", enabledBackendTypes.join(","));
+      }
 
       setState("analyzing");
       setProgress(40);
@@ -107,7 +122,8 @@ export default function UploadPage() {
       const TYPE_LABELS: Record<string, string> = {
         EMAIL: "Email", PHONE: "Phone", AADHAAR: "Aadhaar", PAN: "PAN",
         CREDIT_CARD: "Credit Card", SSN: "SSN", NAME: "Person",
-        ORG: "Organization", LOCATION: "Location",
+        ORG: "Organization", LOCATION: "Location", IP: "IP Address",
+        DATE: "Date",
       };
 
       const detectedPII = data.detected_entities.map((e: any, i: number) => ({
