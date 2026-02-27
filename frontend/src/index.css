@@ -1,0 +1,240 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Core dark enterprise palette */
+    --background: 220 16% 8%;
+    --foreground: 210 20% 92%;
+
+    --card: 220 14% 11%;
+    --card-foreground: 210 20% 92%;
+
+    --popover: 220 14% 11%;
+    --popover-foreground: 210 20% 92%;
+
+    --primary: 199 89% 48%;
+    --primary-foreground: 220 16% 8%;
+    --primary-glow: 199 89% 60%;
+
+    --secondary: 220 13% 16%;
+    --secondary-foreground: 210 20% 80%;
+
+    --muted: 220 13% 14%;
+    --muted-foreground: 215 13% 50%;
+
+    --accent: 262 83% 58%;
+    --accent-foreground: 210 20% 98%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 40% 98%;
+
+    --success: 152 76% 40%;
+    --success-foreground: 210 40% 98%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 220 16% 8%;
+
+    --border: 220 13% 18%;
+    --input: 220 13% 16%;
+    --ring: 199 89% 48%;
+
+    --radius: 0.625rem;
+
+    --sidebar-background: 220 16% 6%;
+    --sidebar-foreground: 215 13% 65%;
+    --sidebar-primary: 199 89% 48%;
+    --sidebar-primary-foreground: 220 16% 8%;
+    --sidebar-accent: 220 13% 13%;
+    --sidebar-accent-foreground: 210 20% 92%;
+    --sidebar-border: 220 13% 13%;
+    --sidebar-ring: 199 89% 48%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(199 89% 48%), hsl(262 83% 58%));
+    --gradient-card: linear-gradient(145deg, hsl(220 14% 12%), hsl(220 14% 10%));
+    --gradient-glow: radial-gradient(ellipse at top, hsl(199 89% 48% / 0.15), transparent 60%);
+    --gradient-danger: linear-gradient(135deg, hsl(0 72% 51%), hsl(20 90% 50%));
+    --gradient-success: linear-gradient(135deg, hsl(152 76% 40%), hsl(174 72% 40%));
+
+    /* Shadows */
+    --shadow-sm: 0 2px 8px hsl(220 16% 4% / 0.6);
+    --shadow-md: 0 4px 20px hsl(220 16% 4% / 0.7);
+    --shadow-lg: 0 8px 40px hsl(220 16% 4% / 0.8);
+    --shadow-glow: 0 0 30px hsl(199 89% 48% / 0.25);
+    --shadow-glow-accent: 0 0 30px hsl(262 83% 58% / 0.25);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  code,
+  pre,
+  .mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
+}
+
+@layer components {
+  .glass-card {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(12px);
+  }
+
+  .glow-border {
+    border: 1px solid hsl(var(--primary) / 0.4);
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.1);
+  }
+
+  .gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-bg {
+    background: var(--gradient-primary);
+  }
+
+  .status-badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .metric-card {
+    @apply glass-card rounded-xl p-5 relative overflow-hidden;
+  }
+
+  .metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--gradient-primary);
+    opacity: 0.5;
+  }
+
+  .nav-item-active {
+    background: hsl(var(--primary) / 0.12);
+    border-left: 2px solid hsl(var(--primary));
+    color: hsl(var(--primary));
+  }
+
+  .risk-gauge-critical {
+    color: hsl(var(--destructive));
+  }
+
+  .risk-gauge-high {
+    color: hsl(38 92% 50%);
+  }
+
+  .risk-gauge-medium {
+    color: hsl(199 89% 48%);
+  }
+
+  .risk-gauge-low {
+    color: hsl(var(--success));
+  }
+
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .shimmer {
+    background: linear-gradient(90deg, transparent, hsl(var(--border) / 0.5), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes glow-pulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 40px hsl(var(--primary) / 0.6);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+.animate-slide-left {
+  animation: slideInLeft 0.3s ease forwards;
+}
+
+.animate-glow {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
