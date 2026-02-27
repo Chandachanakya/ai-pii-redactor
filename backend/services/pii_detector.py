@@ -45,11 +45,54 @@ def _get_nlp():
 
 
 # ---------------------------------------------------------------------------
+# Validation Helpers
+# ---------------------------------------------------------------------------
+def is_valid_entity(ent_type: str, value: str) -> bool:
+    """Heuristic rules to filter out false positives."""
+    text = value.strip()
+    lower_text = text.lower()
+    
+    # 1. Ignore very short tokens (noise)
+    if len(text) <= 2:
+        return False
+        
+    # 2. Ignore placeholder labels/keywords
+    ignore_keywords = {"name", "address", "phone", "email", "location", "organization", "aadhaar", "pan", "ssn"}
+    if lower_text in ignore_keywords:
+        return False
+        
+    # 3. Ignore tokens ending with colons (likely placeholders like "Name:")
+    if text.endswith(":"):
+        return False
+
+    # 4. Type-specific validation
+    if ent_type == "NAME":
+        # Personal names usually have at least two parts
+        parts = text.split()
+        if len(parts) < 2:
+            return False
+        # Ignore if it looks like a single common word or is all digits
+        if text.isdigit():
+            return False
+
+    if ent_type == "EMAIL":
+        if "@" not in text or "." not in text:
+            return False
+
+    if ent_type == "PHONE":
+        digits = re.sub(r"\D", "", text)
+        if len(digits) < 10:
+            return False
+
+    return True
+
+
+# ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
 def detect_pii(text: str, enabled_types: List[str] = None) -> List[Dict]:
     """Return a list of PII entities found in *text*, optionally filtered by type."""
-    entities: List[Dict] = []
+    raw_entities: List[Dict] = []
 
     # Map mapping backend types to pattern keys
     # PATTERNS keys: EMAIL, PHONE, SSN, CREDIT_CARD, AADHAAR, PAN
@@ -65,12 +108,7 @@ def detect_pii(text: str, enabled_types: List[str] = None) -> List[Dict]:
             continue
             
         for match in re.finditer(pattern, text):
-            # Filter: phone must have at least 10 digits total
-            if pii_type == "PHONE":
-                digits = re.sub(r"\D", "", match.group())
-                if len(digits) < 10:
-                    continue
-            entities.append(
+            raw_entities.append(
                 {
                     "type": pii_type,
                     "value": match.group(),
@@ -90,10 +128,7 @@ def detect_pii(text: str, enabled_types: List[str] = None) -> List[Dict]:
             if pii_type not in enabled_types:
                 continue
                 
-            # Filter: skip very short NER entities (usually noise)
-            if len(ent.text.strip()) <= 2:
-                continue
-            entities.append(
+            raw_entities.append(
                 {
                     "type": pii_type,
                     "value": ent.text,
@@ -101,6 +136,9 @@ def detect_pii(text: str, enabled_types: List[str] = None) -> List[Dict]:
                     "end": ent.end_char,
                 }
             )
+
+    # Apply validation heuristics
+    entities = [e for e in raw_entities if is_valid_entity(e["type"], e["value"])]
 
     # Sort by position for consistent redaction
     entities.sort(key=lambda e: e["start"])

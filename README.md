@@ -2,6 +2,10 @@
 
 An enterprise-grade, privacy-first tool to detect and redact Personally Identifiable Information (PII) from public datasets and documents. Built with a high-performance FastAPI backend and a stunning, responsive React frontend.
 
+Developed By: 
+Ankita (UI/UX and Frontend Developer), 
+A. Ashwini (Backend API Developer and OCR Processing Pipeline),
+Ch. Chanakya (Team lead, System Architecture Design and Backend API Developer)
 
 ## 🚀 Features
 

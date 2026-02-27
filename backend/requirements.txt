@@ -5,3 +5,4 @@ pdfplumber
 spacy
 Pillow
 pytesseract
+opencv-python
