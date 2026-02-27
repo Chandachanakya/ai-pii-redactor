@@ -128,11 +128,10 @@ export default function DashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {[
           { icon: Upload, label: "New Redaction", desc: "Upload & redact a document", path: "/upload", primary: true },
           { icon: Database, label: "View History", desc: "Browse all processed files", path: "/history", primary: false },
-          { icon: Users, label: "Admin Panel", desc: "Manage users & patterns", path: "/admin", primary: false },
         ].map(a => (
           <button key={a.label} onClick={() => navigate(a.path)}
             className={`flex items-center gap-3 p-4 rounded-xl border transition-all hover:scale-[1.01] text-left ${a.primary

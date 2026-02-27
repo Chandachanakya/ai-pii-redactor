@@ -2,28 +2,21 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Upload, History, BarChart3,
-  Shield, Settings, ChevronLeft, ChevronRight,
-  ShieldCheck, Cpu, Zap
+  ChevronLeft, ChevronRight,
+  ShieldCheck, Cpu
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/context/AuthContext";
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/" },
   { label: "Upload & Redact", icon: Upload, path: "/upload" },
   { label: "History", icon: History, path: "/history" },
   { label: "Analytics", icon: BarChart3, path: "/analytics" },
-  { label: "Settings", icon: Settings, path: "/settings" },
-];
-
-const adminItems = [
-  { label: "Admin Panel", icon: Shield, path: "/admin" },
 ];
 
 export default function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
-  const { user } = useAuth();
 
   const isActive = (path: string) =>
     path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
@@ -83,36 +76,6 @@ export default function AppSidebar() {
             </Link>
           );
         })}
-
-        {user?.role === "admin" && (
-          <>
-            {!collapsed && (
-              <div className="px-3 mt-4 mb-2">
-                <span className="text-[10px] font-semibold tracking-wider uppercase text-muted-foreground">Administration</span>
-              </div>
-            )}
-            {collapsed && <div className="my-2 border-t border-sidebar-border" />}
-            {adminItems.map((item) => {
-              const active = isActive(item.path);
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 group",
-                    collapsed && "justify-center px-2",
-                    active
-                      ? "bg-primary/12 text-primary border-l-2 border-primary rounded-l-none"
-                      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                  )}
-                >
-                  <item.icon size={18} className={cn("flex-shrink-0", active && "text-primary")} />
-                  {!collapsed && <span className="text-sm font-medium">{item.label}</span>}
-                </Link>
-              );
-            })}
-          </>
-        )}
       </nav>
 
       {/* AI Status */}

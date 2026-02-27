@@ -2,7 +2,6 @@
 
 An enterprise-grade, privacy-first tool to detect and redact Personally Identifiable Information (PII) from public datasets and documents. Built with a high-performance FastAPI backend and a stunning, responsive React frontend.
 
-![Dashboard Preview](file:///C:/Users/chand/.gemini/antigravity/brain/bf5ab3e5-fab5-45be-acf5-12b6661026cc/dashboard_page_1772189037947.png)
 
 ## 🚀 Features
 
