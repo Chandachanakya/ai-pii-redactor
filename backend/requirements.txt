@@ -9,10 +9,3 @@ pytesseract
 opencv-python
 numpy
 pydantic
-recharts
-lucide-react
-sonner
-clsx
-tailwind-merge
-lucide-react
-shancn-ui
