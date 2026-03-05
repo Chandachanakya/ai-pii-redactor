@@ -151,11 +151,25 @@ export default function UploadPage() {
       });
 
       setState("done");
-      toast.success(`Redaction complete — ${detectedPII.length} PII entities found`);
+      toast.success(`Redaction complete`, {
+        description: `Found ${detectedPII.length} PII entities in ${elapsed}s`,
+        icon: <CheckCircle className="text-success" size={16} />
+      });
     } catch (error: any) {
       setState("idle");
       setProgress(0);
-      toast.error(error.message || "Failed to analyze file");
+
+      let errorMsg = error.message || "An unexpected error occurred during analysis";
+      let errorDesc = "Please check your file and try again.";
+
+      if (errorMsg.includes("not find any text")) {
+        errorDesc = "Try a different file or ensure it has clear, readable text.";
+      }
+
+      toast.error("Analysis Failed", {
+        description: errorMsg,
+      });
+      console.error("Redaction Error:", error);
     }
   };
 
@@ -217,15 +231,21 @@ export default function UploadPage() {
               </div>
 
               {state !== "idle" && state !== "done" && (
-                <div className="mt-4">
+                <div className="mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
                   <div className="flex items-center justify-between text-xs mb-2">
-                    <span className="text-muted-foreground flex items-center gap-1.5">
-                      <Loader2 size={12} className="animate-spin" /> {stateLabel[state]}
+                    <span className="text-muted-foreground flex items-center gap-2">
+                      <div className="relative flex h-3 w-3 items-center justify-center">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-40"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                      </div>
+                      <span className="font-medium text-foreground">{stateLabel[state]}</span>
                     </span>
-                    <span className="text-primary font-mono">{progress}%</span>
+                    <span className="text-primary font-mono font-bold">{progress}%</span>
                   </div>
-                  <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
-                    <div className="h-full gradient-bg rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
+                  <div className="h-2 bg-secondary rounded-full overflow-hidden p-[1px]">
+                    <div className="h-full gradient-bg rounded-full transition-all duration-500 ease-out relative overflow-hidden" style={{ width: `${progress}%` }}>
+                      <div className="absolute inset-0 w-full h-full bg-[linear-gradient(90deg,transparent_25%,rgba(255,255,255,0.2)_50%,transparent_75%)] bg-[length:200%_100%] animate-shimmer" />
+                    </div>
                   </div>
                 </div>
               )}

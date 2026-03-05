@@ -74,18 +74,32 @@ async def analyze(
                 raw_text = extract_text_from_image(contents)
             elif file_type == "text":
                 raw_text = extract_text_from_txt(contents)
+            else:
+                raw_text = None
         except Exception as e:
             logger.error(f"Text extraction failed for {file_name}: {e}")
             raise HTTPException(
                 status_code=422,
-                detail=f"Failed to extract text from '{file_name}': {str(e)}",
+                detail={
+                    "error": "extraction_failed",
+                    "message": f"Failed to extract text from '{file_name}'",
+                    "technical_details": str(e)
+                },
             )
 
-        # --- Guard: no text extracted ---------------------------------------
-        if not raw_text or not raw_text.strip():
+        # --- Guard: no text extracted or OCR failure markers ----------------
+        if not raw_text or not raw_text.strip() or "[OCR error]" in raw_text or "[OCR unavailable]" in raw_text:
+            error_detail = "No readable text found"
+            if raw_text and "[OCR" in raw_text:
+                error_detail = raw_text.strip()
+                
             raise HTTPException(
                 status_code=422,
-                detail=f"No readable text found in '{file_name}'. The file may be empty, scanned without OCR support, or corrupted.",
+                detail={
+                    "error": "no_text_extracted",
+                    "message": f"{error_detail} in '{file_name}'.",
+                    "suggestion": "Please ensure the file is not corrupted and contains extractable text or clear handwriting/printing for images."
+                },
             )
 
     elif text:
@@ -93,13 +107,19 @@ async def analyze(
         if not text.strip():
             raise HTTPException(
                 status_code=400,
-                detail="Provided text is empty or blank.",
+                detail={
+                    "error": "empty_input",
+                    "message": "Provided text input is empty or contains only whitespace."
+                },
             )
         raw_text = text
     else:
         raise HTTPException(
             status_code=400,
-            detail="Provide either 'text' or a 'file' upload.",
+            detail={
+                "error": "missing_input",
+                "message": "Provide either 'text' or a 'file' upload to begin redaction."
+            },
         )
 
     # --- 2. Detect PII (with NLP error handling) ----------------------------

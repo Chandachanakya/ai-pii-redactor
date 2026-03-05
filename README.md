@@ -2,12 +2,34 @@
 
 An enterprise-grade, privacy-first tool to detect and redact Personally Identifiable Information (PII) from public datasets and documents. Built with a high-performance FastAPI backend and a stunning, responsive React frontend.
 
-Developed By: 
-Ankita (UI/UX and Frontend Developer), 
-A. Ashwini (Backend API Developer and OCR Processing Pipeline),
-Ch. Chanakya (Team lead, System Architecture Design and Backend API Developer)
+> [!IMPORTANT]
+> **Live Demo**: [https://ai-pii-redactor.vercel.app](https://ai-pii-redactor.vercel.app)
+> *(Placeholder link for portfolio demo)*
 
-## 🚀 Features
+---
+
+## 🏗️ Architecture
+
+```mermaid
+graph TD
+    User([User]) -->|Uploads File/Text| FE[React Frontend]
+    FE -->|POST /analyze| BE[FastAPI Backend]
+    
+    subgraph BE_Engine [Backend Processing Engine]
+        direction TB
+        Ext[Text Extractor: PDF/Image/TXT] --> PII[PII Detector: Regex + spaCy NER]
+        PII --> Red[Redaction Engine: Masking/Synthetic]
+        Red --> Risk[Risk Scoring Engine]
+    end
+    
+    BE --> BE_Engine
+    BE_Engine -->|JSON Response| FE
+    FE -->|Displays| Results[Redaction Results & Reports]
+    Results -->|Export| PDF[PDF Compliance Report]
+    Results -->|Export| CSV[JSON/CSV Audit Logs]
+```
+
+## 🚀 Key Features
 
 - **Multi-Format Support**: Process `.txt`, `.pdf`, and images (OCR capability).
 - **Hybrid Detection Engine**:
@@ -15,10 +37,6 @@ Ch. Chanakya (Team lead, System Architecture Design and Backend API Developer)
   - **NLP Layer (spaCy)**: Statistical detection for Names, Organizations, and Locations.
 - **Smart Redaction**: Replace sensitive spans with type-specific placeholders (e.g., `[REDACTED_EMAIL]`) without breaking text flow.
 - **Risk Scoring**: Real-time risk assessment based on entity density and sensitivity weights.
-- **Interactive UI**:
-  - **Dark Mode**: Premium, enterprise-focused glassmorphism design.
-  - **Real-time Progress**: Visual feedback during upload, analysis, and redaction stages.
-  - **PII Toggles**: Granular control over which entity types to detect.
 - **Advanced Export Options**:
   - **PDF Compliance Report**: Professional summary for GDPR/DPDP audits.
   - **JSON/CSV Reports**: Machine-readable audit logs.
@@ -29,22 +47,18 @@ Ch. Chanakya (Team lead, System Architecture Design and Backend API Developer)
 ### Backend
 - **Framework**: FastAPI (Python)
 - **NLP**: spaCy (`en_core_web_sm`)
+- **OCR**: Pytesseract + OpenCV
 - **Document Processing**: PyPDF2, pdfplumber
 - **Validation**: Pydantic
 
 ### Frontend
 - **Framework**: React + Vite + TypeScript
-- **Styling**: Tailwind CSS + Shadcn/UI
+- **Styling**: Tailwind CSS + Shadcn/UI (Glassmorphism design)
 - **Icons**: Lucide React
-- **Visualization**: Recharts
+- **State Management**: React Query (TanStack)
 - **Notifications**: Sonner
 
 ## 📦 Setup & Installation
-
-### Prerequisites
-- Python 3.9+
-- Node.js 18+
-- npm
 
 ### 1. Backend Setup
 ```bash
@@ -53,6 +67,7 @@ python -m venv venv
 .\venv\Scripts\activate  # On Windows
 pip install -r requirements.txt
 python -m spacy download en_core_web_sm
+cp .env.example .env
 ```
 
 ### 2. Frontend Setup
@@ -74,12 +89,15 @@ cd backend
 cd frontend
 npm run dev
 ```
-Open `http://localhost:3000` in your browser.
 
 ## 🔐 Privacy & Security
 - **Stateless Architecture**: No files or PII are stored on the server.
 - **In-Memory Processing**: Analysis happens in volatile memory.
 - **Automatic Deletion**: All uploaded buffers are cleared immediately after the response is sent.
 
-## 📄 License
-This project is developed for hackathon purposes. All rights reserved.
+---
+
+## 👨‍💻 Developed By
+- **Ch. Chanakya**: Team Lead & System Architecture
+- **Ankita**: UI/UX & Frontend Development
+- **A. Ashwini**: Backend & OCR Pipeline

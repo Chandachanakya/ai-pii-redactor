@@ -218,25 +218,42 @@ export default function RedactionResults({ results }: RedactionResultsProps) {
           </div>
         </div>
 
-        {/* Download */}
-        <div className="glass-card rounded-xl p-5">
+        {/* Download & Primary Action */}
+        <div className="glass-card rounded-xl p-5 border-primary/20 bg-primary/4">
           <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
-            <Download size={14} className="text-primary" /> Export Reports
+            <Download size={14} className="text-primary" /> Export Results
           </h3>
           <div className="space-y-2">
-            {exportActions.map(d => (
-              <button key={d.format} onClick={d.action}
-                className="w-full flex items-center gap-3 p-3 bg-secondary/30 hover:bg-secondary/60 border border-border rounded-lg transition-all text-left group">
-                <div className="p-1.5 bg-primary/10 rounded">
-                  <d.icon size={13} className="text-primary" />
-                </div>
-                <div>
-                  <div className="text-xs font-medium text-foreground">{d.format}</div>
-                  <div className="text-[10px] text-muted-foreground">{d.desc}</div>
-                </div>
-                <ArrowRight size={12} className="ml-auto text-muted-foreground group-hover:text-primary transition-colors" />
-              </button>
-            ))}
+            {/* Primary Action Button */}
+            <button
+              onClick={() => exportRedactedFile(results)}
+              className="w-full flex items-center gap-3 p-4 bg-primary text-primary-foreground rounded-lg transition-all hover:opacity-90 shadow-glow mb-4"
+            >
+              <div className="p-1.5 bg-white/20 rounded">
+                <CheckCircle size={16} />
+              </div>
+              <div className="flex-1">
+                <div className="text-sm font-bold">Download Redacted File</div>
+                <div className="text-[10px] opacity-80">Cleaned version (TXT)</div>
+              </div>
+              <ArrowRight size={14} />
+            </button>
+
+            <div className="grid grid-cols-1 gap-2">
+              {exportActions.filter(a => a.format !== "Redacted File").map(d => (
+                <button key={d.format} onClick={d.action}
+                  className="w-full flex items-center gap-3 p-2.5 bg-secondary/40 hover:bg-secondary/70 border border-border rounded-lg transition-all text-left group">
+                  <div className="p-1.5 bg-primary/10 rounded">
+                    <d.icon size={13} className="text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-xs font-semibold text-foreground">{d.format}</div>
+                    <div className="text-[10px] text-muted-foreground">{d.desc}</div>
+                  </div>
+                  <ArrowRight size={12} className="text-muted-foreground group-hover:text-primary transition-colors" />
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
