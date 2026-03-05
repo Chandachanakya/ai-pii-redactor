@@ -101,8 +101,11 @@ export default function UploadPage() {
       setState("analyzing");
       setProgress(40);
 
+      const baseUrl = import.meta.env.VITE_API_URL || "";
+      const apiUrl = `${baseUrl.replace(/\/$/, "")}/analyze`;
+
       // Real API call to backend
-      const response = await fetch("/analyze", {
+      const response = await fetch(apiUrl, {
         method: "POST",
         body: formData,
       });
