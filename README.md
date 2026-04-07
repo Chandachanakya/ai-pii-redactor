@@ -3,9 +3,7 @@
 An enterprise-grade, privacy-first tool to detect and redact Personally Identifiable Information (PII) from public datasets and documents. Built with a high-performance FastAPI backend and a stunning, responsive React frontend.
 
 > [!IMPORTANT]
-> **Live Demo**: [https://ai-pii-redactor.vercel.app](https://ai-pii-redactor.vercel.app)
-> *(Placeholder link for portfolio demo)*
-
+> **Live Demo**: [https://ai-pii-redactor-y8uo.onrender.com/](https://ai-pii-redactor-y8uo.onrender.com/)
 ---
 
 ## 🏗️ Architecture
